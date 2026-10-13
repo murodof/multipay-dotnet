@@ -14,3 +14,4 @@ Dockerfile
 docker-compose.yml
 .dockerignore
 Makefile
+CLAUDE.md
