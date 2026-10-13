@@ -1,0 +1,16 @@
+bin/
+obj/
+logs/
+.env
+*.user
+.vs/
+.idea/
+TestResults/
+dist/
+docs/
+scripts/
+postman/
+Dockerfile
+docker-compose.yml
+.dockerignore
+Makefile

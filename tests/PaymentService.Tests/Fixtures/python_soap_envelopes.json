@@ -1,0 +1,24 @@
+{
+ "hold": [
+  "<?xml version='1.0' encoding='utf-8'?>\n<ns0:Envelope xmlns:ns0=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"urn:PaymentServer\"><ns0:Header /><ns0:Body><ns1:Payment><language>en</language><billerRef>SOAP_DMS</billerRef><payinstrRef>SOAP_DMS</payinstrRef><sessionID>ref-1</sessionID><paymentRef>ref-1</paymentRef><details><item><name>pan</name><value>9860090101191238</value></item><item><name>expiry</name><value>2901</value></item><item><name>ccy_code</name><value>860</value></item><item><name>amount</name><value>5000000</value></item><item><name>merchant_id</name><value>123456789012345</value></item><item><name>terminal_id</name><value>12345678</value></item><item><name>centre_id</name><value>bank</value></item></details><paymentOriginator>login</paymentOriginator></ns1:Payment></ns0:Body></ns0:Envelope>"
+ ],
+ "confirm": [
+  "<?xml version='1.0' encoding='utf-8'?>\n<ns0:Envelope xmlns:ns0=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"urn:PaymentServer\"><ns0:Header /><ns0:Body><ns1:Payment><paymentRef>ref-1</paymentRef><confirmed>true</confirmed><finished>true</finished><paymentOriginator>login</paymentOriginator></ns1:Payment></ns0:Body></ns0:Envelope>"
+ ],
+ "get_payment": [
+  "<?xml version='1.0' encoding='utf-8'?>\n<ns0:Envelope xmlns:ns0=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"urn:PaymentServer\"><ns0:Header /><ns0:Body><ns1:GetPayment><paymentRef>ref-1</paymentRef><paymentOriginator>login</paymentOriginator></ns1:GetPayment></ns0:Body></ns0:Envelope>"
+ ],
+ "cancel": [
+  "<?xml version='1.0' encoding='utf-8'?>\n<ns0:Envelope xmlns:ns0=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"urn:PaymentServer\"><ns0:Header /><ns0:Body><ns1:CancelRequest><paymentRef>ref-1</paymentRef><paymentOriginator>login</paymentOriginator></ns1:CancelRequest></ns0:Body></ns0:Envelope>"
+ ],
+ "return_payment": [
+  "<?xml version='1.0' encoding='utf-8'?>\n<ns0:Envelope xmlns:ns0=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"urn:PaymentServer\"><ns0:Header /><ns0:Body><ns1:ReturnPayment><paymentID>12345</paymentID><paymentRef>ref-1</paymentRef><item><name>merchant_id</name><value>123456789012345</value></item><item><name>terminal_id</name><value>12345678</value></item><item><name>centre_id</name><value>bank</value></item><paymentOriginator>login</paymentOriginator></ns1:ReturnPayment></ns0:Body></ns0:Envelope>"
+ ],
+ "reconcile": [
+  "<?xml version='1.0' encoding='utf-8'?>\n<ns0:Envelope xmlns:ns0=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"urn:PaymentServer\"><ns0:Header /><ns0:Body><ns1:Payment><billerRef>SOAP_RECO</billerRef><payinstrRef>SOAP_RECO</payinstrRef><paymentRef>reco-1</paymentRef><details><item><name>terminal_id</name><value>12345678</value></item></details><paymentOriginator>login</paymentOriginator></ns1:Payment></ns0:Body></ns0:Envelope>",
+  "<?xml version='1.0' encoding='utf-8'?>\n<ns0:Envelope xmlns:ns0=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"urn:PaymentServer\"><ns0:Header /><ns0:Body><ns1:Payment><payinstrRef>SOAP_RECO</payinstrRef><paymentRef>reco-1</paymentRef><confirmed>true</confirmed><finished>true</finished><paymentOriginator>login</paymentOriginator></ns1:Payment></ns0:Body></ns0:Envelope>"
+ ],
+ "hold_escaping_and_empty": [
+  "<?xml version='1.0' encoding='utf-8'?>\n<ns0:Envelope xmlns:ns0=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"urn:PaymentServer\"><ns0:Header /><ns0:Body><ns1:Payment><language>en</language><billerRef>SOAP_DMS</billerRef><payinstrRef>SOAP_DMS</payinstrRef><sessionID>a&amp;b&lt;c&gt;\"'</sessionID><paymentRef>a&amp;b&lt;c&gt;\"'</paymentRef><details><item><name>pan</name><value>9860</value></item><item><name>expiry</name><value>2901</value></item><item><name>ccy_code</name><value>860</value></item><item><name>amount</name><value>1</value></item><item><name>merchant_id</name><value /></item><item><name>terminal_id</name><value>12345678</value></item><item><name>centre_id</name><value>bank</value></item></details><paymentOriginator>login</paymentOriginator></ns1:Payment></ns0:Body></ns0:Envelope>"
+ ]
+}

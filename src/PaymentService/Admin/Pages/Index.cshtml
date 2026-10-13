@@ -1,0 +1,64 @@
+@page "/admin"
+@model IndexModel
+@{
+    ViewData["Authenticated"] = true;
+    ViewData["Title"] = "Umumiy ko‘rinish";
+}
+<div class="page-header d-print-none">
+    <div class="container-fluid px-3 px-md-4">
+        <div class="page-pretitle">Multipay</div>
+        <h2 class="page-title">Umumiy ko‘rinish</h2>
+    </div>
+</div>
+<div class="page-body">
+    <div class="container-fluid px-3 px-md-4">
+        <div class="row row-deck row-cards">
+            @foreach (var view in AdminViews.All)
+            {
+                <div class="col-sm-6 col-lg">
+                    <a class="card card-link text-decoration-none" href="/admin/@view.Identity/list">
+                        <div class="card-body">
+                            <div class="subheader">@view.Label</div>
+                            <div class="stat-value">@Model.Totals[view.Identity].ToString("N0", System.Globalization.CultureInfo.InvariantCulture).Replace(',', ' ')</div>
+                        </div>
+                    </a>
+                </div>
+            }
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Sessiyalar holati bo‘yicha</h3>
+                    </div>
+                    @if (Model.Statuses.Count == 0)
+                    {
+                        <div class="empty">
+                            <p class="empty-title">Hali sessiya yo‘q</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-vcenter card-table">
+                                <thead>
+                                <tr>
+                                    <th>Holat</th>
+                                    <th class="cell-number">Soni</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var (status, count) in Model.Statuses)
+                                {
+                                    <tr>
+                                        <td><span class="badge bg-@(AdminViews.Tone("status", status))-lt">@status</span></td>
+                                        <td class="cell-number">@count.ToString(System.Globalization.CultureInfo.InvariantCulture)</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

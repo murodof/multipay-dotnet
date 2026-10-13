@@ -1,0 +1,12 @@
+<service>
+  <id>Multipay</id>
+  <name>Multipay API</name>
+  <description>Multipay .NET payment API</description>
+  <executable>%BASE%\..\..\PaymentService.exe</executable>
+  <arguments>--urls http://127.0.0.1:8010</arguments>
+  <workingdirectory>%BASE%\..\..</workingdirectory>
+  <startmode>Automatic</startmode>
+  <stoptimeout>30 sec</stoptimeout>
+  <onfailure action="restart" delay="10 sec" />
+  <log mode="roll" />
+</service>

@@ -1,0 +1,99 @@
+@page "/admin/{identity}/list"
+@model ListModel
+@{
+    ViewData["Authenticated"] = true;
+    ViewData["Identity"] = Model.View.Identity;
+    ViewData["Title"] = Model.View.Label;
+    var first = Model.Total == 0 ? 0 : (Model.PageNumber - 1) * ListModel.PageSize + 1;
+    var last = Math.Min(Model.PageNumber * ListModel.PageSize, Model.Total);
+    var query = Model.Search is null ? "" : "&q=" + Uri.EscapeDataString(Model.Search);
+}
+<div class="page-header d-print-none">
+    <div class="container-fluid px-3 px-md-4">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <div class="page-pretitle">Jami: @Model.Total</div>
+                <h2 class="page-title">@Model.View.Label</h2>
+            </div>
+            @if (Model.View.SearchField is not null)
+            {
+                <div class="col-12 col-md-auto">
+                    <form method="get" class="input-group">
+                        <input class="form-control" name="q" value="@Model.Search" placeholder="@AdminViews.Heading(Model.View.SearchField) bo‘yicha qidirish" aria-label="Qidirish">
+                        <button type="submit" class="btn btn-primary">Qidirish</button>
+                        @if (Model.Search is not null)
+                        {
+                            <a class="btn" href="/admin/@Model.View.Identity/list">Tozalash</a>
+                        }
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="page-body">
+    <div class="container-fluid px-3 px-md-4">
+        <div class="card">
+            @if (Model.Rows.Count == 0)
+            {
+                <div class="empty">
+                    <p class="empty-title">Ma’lumot topilmadi</p>
+                    <p class="empty-subtitle text-secondary">@(Model.Search is null ? "Bu bo‘limda hali yozuv yo‘q." : "Qidiruvga mos yozuv yo‘q.")</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table table-hover">
+                        <thead>
+                        <tr>
+                            @foreach (var field in Model.View.Fields)
+                            {
+                                <th class="@(AdminViews.Shape(field) == "number" ? "cell-number" : "")">@AdminViews.Heading(field)</th>
+                            }
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var row in Model.Rows)
+                        {
+                            <tr>
+                                @foreach (var field in Model.View.Fields)
+                                {
+                                    var value = AdminViews.Display(row, field);
+                                    var tone = AdminViews.Tone(field, value);
+                                    <td class="cell-@AdminViews.Shape(field)">
+                                        @if (value.Length == 0)
+                                        {
+                                            <span class="text-secondary">—</span>
+                                        }
+                                        else if (tone is not null)
+                                        {
+                                            <span class="badge bg-@(tone)-lt">@value</span>
+                                        }
+                                        else
+                                        {
+                                            @value
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            <div class="card-footer d-flex align-items-center">
+                <p class="m-0 text-secondary">@first–@last / @Model.Total</p>
+                <ul class="pagination m-0 ms-auto">
+                    <li class="page-item @(Model.PageNumber > 1 ? "" : "disabled")">
+                        <a class="page-link" href="?page=@(Model.PageNumber - 1)@query">&larr; Oldingi</a>
+                    </li>
+                    <li class="page-item active"><span class="page-link">@Model.PageNumber</span></li>
+                    <li class="page-item @(Model.PageNumber * ListModel.PageSize < Model.Total ? "" : "disabled")">
+                        <a class="page-link" href="?page=@(Model.PageNumber + 1)@query">Keyingi &rarr;</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

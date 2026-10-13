@@ -1,0 +1,402 @@
+{
+ "now": "2026-09-15T12:00:00+00:00",
+ "secret_keys": "k1:k1-test-secret-0123456789abcdefghijklmnop,k2:k2-other-secret-0123456789abcdefghijklmn",
+ "cases": [
+  {
+   "name": "standard",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998901234567",
+    "amount": 5000000,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsImFtb3VudCI6NTAwMDAwMCwidHMiOjE3ODk0NzM2MDAsIm5vbmNlIjoibm9uY2UtMDEyMzQ1Njc4OWFiY2RlZiJ9.FxX25dOdpyU3j34tvG6ILW-RhcFCE0XavgUCE0-og_A",
+   "expected": {
+    "payload": {
+     "kid": "k1",
+     "order_id": "order-1",
+     "phone": "998901234567",
+     "amount": 5000000,
+     "ts": 1789473600,
+     "nonce": "nonce-0123456789abcdef"
+    },
+    "fresh": true
+   }
+  },
+  {
+   "name": "second key",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998901234567",
+    "amount": 5000000,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k2",
+   "secret": "k2-other-secret-0123456789abcdefghijklmn",
+   "hash": "k2.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsImFtb3VudCI6NTAwMDAwMCwidHMiOjE3ODk0NzM2MDAsIm5vbmNlIjoibm9uY2UtMDEyMzQ1Njc4OWFiY2RlZiJ9.D-qJWm3PorEn8SMhoseLlbErZ2C6VGpgJaZJu130ZMI",
+   "expected": {
+    "payload": {
+     "kid": "k2",
+     "order_id": "order-1",
+     "phone": "998901234567",
+     "amount": 5000000,
+     "ts": 1789473600,
+     "nonce": "nonce-0123456789abcdef"
+    },
+    "fresh": true
+   }
+  },
+  {
+   "name": "key order differs",
+   "payload": {
+    "nonce": "nonce-0123456789abcdef",
+    "ts": 1789473600,
+    "amount": 5000000,
+    "phone": "998901234567",
+    "order_id": "ORD:2026.09_15-x"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJub25jZSI6Im5vbmNlLTAxMjM0NTY3ODlhYmNkZWYiLCJ0cyI6MTc4OTQ3MzYwMCwiYW1vdW50Ijo1MDAwMDAwLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsIm9yZGVyX2lkIjoiT1JEOjIwMjYuMDlfMTUteCJ9.G71W53so3rO8SroSmNY4Ntk0MtwLa26ILDrDzuThpY0",
+   "expected": {
+    "payload": {
+     "kid": "k1",
+     "order_id": "ORD:2026.09_15-x",
+     "phone": "998901234567",
+     "amount": 5000000,
+     "ts": 1789473600,
+     "nonce": "nonce-0123456789abcdef"
+    },
+    "fresh": true
+   }
+  },
+  {
+   "name": "max order id",
+   "payload": {
+    "order_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "phone": "998901234567",
+    "amount": 5000000,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6Inh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHgiLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsImFtb3VudCI6NTAwMDAwMCwidHMiOjE3ODk0NzM2MDAsIm5vbmNlIjoibm9uY2UtMDEyMzQ1Njc4OWFiY2RlZiJ9.F3nhCybg71q0nzkITlEC9ivouJrkd4RPux4vDTxcz_4",
+   "expected": {
+    "payload": {
+     "kid": "k1",
+     "order_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+     "phone": "998901234567",
+     "amount": 5000000,
+     "ts": 1789473600,
+     "nonce": "nonce-0123456789abcdef"
+    },
+    "fresh": true
+   }
+  },
+  {
+   "name": "cyrillic phone",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998ты1234567",
+    "amount": 5000000,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ONGC0YsxMjM0NTY3IiwiYW1vdW50Ijo1MDAwMDAwLCJ0cyI6MTc4OTQ3MzYwMCwibm9uY2UiOiJub25jZS0wMTIzNDU2Nzg5YWJjZGVmIn0.iOFhO6r2tNGTtEBX-lAjv1INRowd619QmNLdw03h3-E",
+   "expected": {
+    "payload": {
+     "kid": "k1",
+     "order_id": "order-1",
+     "phone": "998ты1234567",
+     "amount": 5000000,
+     "ts": 1789473600,
+     "nonce": "nonce-0123456789abcdef"
+    },
+    "fresh": true
+   }
+  },
+  {
+   "name": "arabic digits phone",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998٩٠١٢٣٤٥٦٧",
+    "amount": 5000000,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ONmp2aDZodmi2aPZpNml2abZpyIsImFtb3VudCI6NTAwMDAwMCwidHMiOjE3ODk0NzM2MDAsIm5vbmNlIjoibm9uY2UtMDEyMzQ1Njc4OWFiY2RlZiJ9.D2yeGn1UgobkNKBT8YMZOzsKe8hv4vynGODeZc3Cge4",
+   "expected": {
+    "payload": {
+     "kid": "k1",
+     "order_id": "order-1",
+     "phone": "998٩٠١٢٣٤٥٦٧",
+     "amount": 5000000,
+     "ts": 1789473600,
+     "nonce": "nonce-0123456789abcdef"
+    },
+    "fresh": true
+   }
+  },
+  {
+   "name": "escaped characters",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "99\"8\\9\n0\t1/2<3>4'5\u001f67",
+    "amount": 5000000,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5XCI4XFw5XG4wXHQxLzI8Mz40JzVcdTAwMWY2NyIsImFtb3VudCI6NTAwMDAwMCwidHMiOjE3ODk0NzM2MDAsIm5vbmNlIjoibm9uY2UtMDEyMzQ1Njc4OWFiY2RlZiJ9.otkyZcPQeBdTGpVN0To_r2uTrNZfyRH79ht3zTJmrJk",
+   "expected": {
+    "payload": {
+     "kid": "k1",
+     "order_id": "order-1",
+     "phone": "99\"8\\9\n0\t1/2<3>4'5\u001f67",
+     "amount": 5000000,
+     "ts": 1789473600,
+     "nonce": "nonce-0123456789abcdef"
+    },
+    "fresh": true
+   }
+  },
+  {
+   "name": "big amount",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998901234567",
+    "amount": 100000000000000000000,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsImFtb3VudCI6MTAwMDAwMDAwMDAwMDAwMDAwMDAwLCJ0cyI6MTc4OTQ3MzYwMCwibm9uY2UiOiJub25jZS0wMTIzNDU2Nzg5YWJjZGVmIn0.-xi3NUHqOt4ed_b1sMqx7cMp8KKeRcpJi2heQYMm9GE",
+   "expected": {
+    "payload": {
+     "kid": "k1",
+     "order_id": "order-1",
+     "phone": "998901234567",
+     "amount": "100000000000000000000",
+     "ts": 1789473600,
+     "nonce": "nonce-0123456789abcdef"
+    },
+    "fresh": true
+   }
+  },
+  {
+   "name": "negative amount",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998901234567",
+    "amount": -5,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsImFtb3VudCI6LTUsInRzIjoxNzg5NDczNjAwLCJub25jZSI6Im5vbmNlLTAxMjM0NTY3ODlhYmNkZWYifQ._dnYGcklQRVOP7qmzQ_FWP8EpTtpe8aynvigwA3Qkfg",
+   "expected": {
+    "payload": {
+     "kid": "k1",
+     "order_id": "order-1",
+     "phone": "998901234567",
+     "amount": -5,
+     "ts": 1789473600,
+     "nonce": "nonce-0123456789abcdef"
+    },
+    "fresh": true
+   }
+  },
+  {
+   "name": "extra field",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998901234567",
+    "amount": 5000000,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef",
+    "extra": {
+     "nested": [
+      1,
+      2,
+      null,
+      true
+     ]
+    }
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsImFtb3VudCI6NTAwMDAwMCwidHMiOjE3ODk0NzM2MDAsIm5vbmNlIjoibm9uY2UtMDEyMzQ1Njc4OWFiY2RlZiIsImV4dHJhIjp7Im5lc3RlZCI6WzEsMixudWxsLHRydWVdfX0.TqixBT1yYevcuafbxAwyvceUL0e55t13bWB9IZbxCIg",
+   "expected": {
+    "payload": {
+     "kid": "k1",
+     "order_id": "order-1",
+     "phone": "998901234567",
+     "amount": 5000000,
+     "ts": 1789473600,
+     "nonce": "nonce-0123456789abcdef"
+    },
+    "fresh": true
+   }
+  },
+  {
+   "name": "float amount",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998901234567",
+    "amount": 50000.5,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsImFtb3VudCI6NTAwMDAuNSwidHMiOjE3ODk0NzM2MDAsIm5vbmNlIjoibm9uY2UtMDEyMzQ1Njc4OWFiY2RlZiJ9.Bg61QJ1iM2y9USiLKbgNCn9v1cLcpEq6wBG7KcgsI2M",
+   "expected": {
+    "error": "HASH_INVALID",
+    "details": {
+     "field": "amount"
+    }
+   }
+  },
+  {
+   "name": "bool amount",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998901234567",
+    "amount": true,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsImFtb3VudCI6dHJ1ZSwidHMiOjE3ODk0NzM2MDAsIm5vbmNlIjoibm9uY2UtMDEyMzQ1Njc4OWFiY2RlZiJ9.vT38GUed4yeFnhzlKnZWYWj2Y22b1djJ36jdIMqdL1A",
+   "expected": {
+    "error": "HASH_INVALID",
+    "details": {
+     "field": "amount"
+    }
+   }
+  },
+  {
+   "name": "string amount",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998901234567",
+    "amount": "5000000",
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsImFtb3VudCI6IjUwMDAwMDAiLCJ0cyI6MTc4OTQ3MzYwMCwibm9uY2UiOiJub25jZS0wMTIzNDU2Nzg5YWJjZGVmIn0.WXFpPA4YmdyUzl7KK0v5MAzWSg21KoyHqDMY6QnKQoI",
+   "expected": {
+    "error": "HASH_INVALID",
+    "details": {
+     "field": "amount"
+    }
+   }
+  },
+  {
+   "name": "ts too big",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998901234567",
+    "amount": 5000000,
+    "ts": 1000000000000,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsImFtb3VudCI6NTAwMDAwMCwidHMiOjEwMDAwMDAwMDAwMDAsIm5vbmNlIjoibm9uY2UtMDEyMzQ1Njc4OWFiY2RlZiJ9.jLPjUraPgeaA9XfkHLf1ooDEiOVuFGGH_0xgZ01S_w4",
+   "expected": {
+    "error": "HASH_INVALID",
+    "details": {
+     "field": "ts"
+    }
+   }
+  },
+  {
+   "name": "short nonce",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998901234567",
+    "amount": 5000000,
+    "ts": 1789473600,
+    "nonce": "too-short"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsImFtb3VudCI6NTAwMDAwMCwidHMiOjE3ODk0NzM2MDAsIm5vbmNlIjoidG9vLXNob3J0In0.rmOqOLYY4eja7sH7oMnpLGUUrOXyw5i-Tdmv5eNJ7sU",
+   "expected": {
+    "error": "HASH_INVALID",
+    "details": {
+     "field": "nonce"
+    }
+   }
+  },
+  {
+   "name": "order id with space",
+   "payload": {
+    "order_id": "has space",
+    "phone": "998901234567",
+    "amount": 5000000,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k1",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k1.eyJvcmRlcl9pZCI6ImhhcyBzcGFjZSIsInBob25lIjoiOTk4OTAxMjM0NTY3IiwiYW1vdW50Ijo1MDAwMDAwLCJ0cyI6MTc4OTQ3MzYwMCwibm9uY2UiOiJub25jZS0wMTIzNDU2Nzg5YWJjZGVmIn0.hsQfu1hHWElpKJTSn2Ir5SSq9m29AMgHEiY_03wYnMQ",
+   "expected": {
+    "error": "HASH_INVALID",
+    "details": {
+     "field": "order_id"
+    }
+   }
+  },
+  {
+   "name": "unknown kid",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998901234567",
+    "amount": 5000000,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k9",
+   "secret": "k1-test-secret-0123456789abcdefghijklmnop",
+   "hash": "k9.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsImFtb3VudCI6NTAwMDAwMCwidHMiOjE3ODk0NzM2MDAsIm5vbmNlIjoibm9uY2UtMDEyMzQ1Njc4OWFiY2RlZiJ9.Pok56CQLEudlmTlFNjG1kHqA09UlqEf06Tc8dOIgCg8",
+   "expected": {
+    "error": "HASH_INVALID",
+    "details": null
+   }
+  },
+  {
+   "name": "wrong secret",
+   "payload": {
+    "order_id": "order-1",
+    "phone": "998901234567",
+    "amount": 5000000,
+    "ts": 1789473600,
+    "nonce": "nonce-0123456789abcdef"
+   },
+   "kid": "k1",
+   "secret": "k1-wrong-secret-0123456789abcdefghijklmno",
+   "hash": "k1.eyJvcmRlcl9pZCI6Im9yZGVyLTEiLCJwaG9uZSI6Ijk5ODkwMTIzNDU2NyIsImFtb3VudCI6NTAwMDAwMCwidHMiOjE3ODk0NzM2MDAsIm5vbmNlIjoibm9uY2UtMDEyMzQ1Njc4OWFiY2RlZiJ9.VzTC7mNIpohD9L7tSWO1ndm-KT2prObvGd17AlvtMmM",
+   "expected": {
+    "error": "HASH_INVALID",
+    "details": null
+   }
+  }
+ ]
+}
