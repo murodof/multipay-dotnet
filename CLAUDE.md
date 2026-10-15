@@ -51,7 +51,13 @@ The package is built and inspected on Linux only; it has not been run on a Windo
 `scripts/stub/provider_stub.py` is a fake SV-GATE/HUMO/Operator for local end-to-end runs.
 
 `Directory.Build.props` turns on nullable, `TreatWarningsAsErrors` and the latest analyzers for
-every project.
+every project. Because warnings are errors, NuGet audit (NU1901–NU1904) fails the restore as soon as
+an advisory is published for any package in the graph, including transitive ones — that is how the
+October 2026 `System.Security.Cryptography.Pkcs` advisories (GHSA-846f-f764-76mx,
+GHSA-2fmv-rv2c-59x7, pulled in through EF Core → Microsoft.Data.SqlClient) surfaced. The fix is a
+direct `PackageReference` to the patched version (it overrides the transitive one), not a
+`NoWarn`. `global.json` requires SDK ≥ 10.0.113 because the self-contained Windows package ships
+the runtime that comes with the SDK; raise it with each monthly .NET security release.
 
 ## Layering and dependency injection
 

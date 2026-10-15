@@ -18,7 +18,7 @@ powershell -ExecutionPolicy Bypass -File deploy\windows\publish.ps1   # Windows
 bash deploy/windows/publish.sh                                       # Linux / macOS
 ```
 
-Natija: `dist/windows/Multipay-win-x64.zip`. Ichida:
+Natija: `dist/windows/Multipay-win-x64.zip`. Yig‘ish uchun SDK 10.0.113 yoki yangisi kerak (`global.json`): paket ichidagi runtime SDK bilan keladi, xavfsizlik yangilanishlari uchun har oy SDK yangilanib paket qayta yig‘iladi (SDK va NuGet paketlarini yangilash tartibi — loyiha ildizidagi `README.md`, "Xavfsizlik yangilanishlari" bo‘limi). Ichida:
 
 | Fayl | Vazifasi |
 | --- | --- |

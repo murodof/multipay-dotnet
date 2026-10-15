@@ -15,6 +15,7 @@ Servis Python/FastAPI'dagi `multipay` servisining **.NET 10 + ASP.NET Core + EF 
 - [Sozlamalar](#sozlamalar)
 - [Windows Server'ga deploy](#windows-serverga-deploy)
 - [Yangilash, orqaga qaytarish, backup](#yangilash-orqaga-qaytarish-backup)
+- [Xavfsizlik yangilanishlari (.NET SDK va NuGet paketlari)](#xavfsizlik-yangilanishlari-net-sdk-va-nuget-paketlari)
 - [Muammolarni aniqlash](#muammolarni-aniqlash)
 - [Admin panel](#admin-panel)
 - [Lokal ishlab chiqish](#lokal-ishlab-chiqish)
@@ -23,7 +24,7 @@ Servis Python/FastAPI'dagi `multipay` servisining **.NET 10 + ASP.NET Core + EF 
 
 | Qayerda | Nima |
 | --- | --- |
-| Paket yig‘iladigan kompyuter | .NET 10 SDK (`dotnet --version` ≥ 10.0.100). Windows'da PowerShell yetarli; Linux/macOS'da `bash` va `zip` |
+| Paket yig‘iladigan kompyuter | .NET 10 SDK **10.0.113 yoki yangisi** (`dotnet --version`). Windows'da PowerShell yetarli; Linux/macOS'da `bash` va `zip` |
 | Server | Windows Server 2016 x64 yoki yangisi. **.NET o‘rnatish shart emas** — paket self-contained |
 | Ma'lumotlar bazasi | MS SQL Server 2016 yoki yangisi (testlar 2022 da yuradi) |
 | Kesh | Redis 7 (alohida Linux serverda) yoki Windows'da Redis'ga mos Memurai |
@@ -187,6 +188,8 @@ bash deploy/windows/publish.sh
 ```
 
 Ikkala skript bir xil ishni qiladi; `make` kerak emas. Natija: `dist/windows/Multipay-win-x64.zip` (taxminan 115 MB).
+
+Paket ichiga .NET runtime'i SDK bilan birga keladigan versiyada kiradi, shuning uchun `global.json` eng kamida SDK 10.0.113 ni talab qiladi (runtime 10.0.13, 2026-yil 13-oktabr xavfsizlik yangilanishi). Eskiroq SDK bilan yig‘ish xato beradi — SDK'ni yangilang. Har oy Microsoft yangi xavfsizlik yangilanishi chiqarganda (oyning ikkinchi seshanbasi) SDK'ni yangilab, paketni qayta yig‘ib serverga qo‘ying: serverdagi Windows Update bu paket ichidagi runtime'ni yangilamaydi. Tartibi: [Xavfsizlik yangilanishlari](#xavfsizlik-yangilanishlari-net-sdk-va-nuget-paketlari).
 
 Skriptsiz, qo‘lda yig‘ish (har qanday tizimda bir xil buyruqlar):
 
@@ -425,6 +428,118 @@ schtasks /Create /TN "Multipay DB backup" /SC DAILY /ST 03:00 /RU "<backup-akkau
 ```
 
 Backuplarni boshqa diskda yoki serverda saqlang, eskilarini tozalab boring va vaqti-vaqti bilan `RESTORE VERIFYONLY FROM DISK = N'<fayl>' WITH CHECKSUM` bilan, sinov bazasiga tiklab esa to‘liqligini tekshiring.
+
+## Xavfsizlik yangilanishlari (.NET SDK va NuGet paketlari)
+
+Paket self-contained: .NET runtime'i va barcha kutubxonalar `PaymentService.exe` bilan birga keladi. Shuning uchun **serverdagi Windows Update ularni yangilamaydi** — yangilash paketni yig‘adigan kompyuterda qilinadi, keyin paket qayta yig‘ilib serverga qo‘yiladi. Serverga .NET SDK o‘rnatish kerak emas.
+
+Qachon qilinadi:
+
+- har oy, Microsoft xavfsizlik yangilanishlari chiqqandan keyin (oyning ikkinchi seshanbasi, "Patch Tuesday");
+- yig‘ish `NU1902`/`NU1903`/`NU1904` xatosi bilan to‘xtasa — bu NuGet'da loyihadagi biror paket uchun zaiflik e'lon qilinganini bildiradi.
+
+Quyidagi buyruqlar paket yig‘iladigan kompyuterda, loyiha ildizida bajariladi (PowerShell; Linux'da ham bir xil).
+
+### 1. Holatni tekshirish
+
+```powershell
+dotnet --list-sdks                                          # o‘rnatilgan SDK'lar
+dotnet list package --vulnerable --include-transitive       # zaif paketlar (bilvosita kelganlari ham)
+dotnet list package --outdated                              # yangi versiyasi chiqqan paketlar
+```
+
+Eng so‘nggi .NET 10 relizi va uning SDK versiyasi: <https://dotnet.microsoft.com/download/dotnet/10.0> (sahifada "Security patch" deb belgilanadi).
+
+### 2. .NET SDK'ni yangilash
+
+**Windows 10/11 yoki Windows Server 2022+** (winget bor):
+
+```powershell
+winget upgrade Microsoft.DotNet.SDK.10
+```
+
+**Windows Server 2016/2019** (winget yo‘q) — Microsoft'ning o‘rnatish skripti bilan:
+
+```powershell
+[Net.ServicePointManager]::SecurityProtocol = 'Tls12'
+Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1 -UseBasicParsing
+.\dotnet-install.ps1 -Channel 10.0 -InstallDir "$env:ProgramFiles\dotnet"
+```
+
+yoki yuqoridagi sahifadan SDK x64 installer'ini yuklab o‘rnating. Visual Studio ishlatilsa, Visual Studio Installer'dagi "Update" SDK'ni ham yangilaydi.
+
+**Linux:** `sudo apt update && sudo apt upgrade dotnet-sdk-10.0`; repozitoriyda yangi versiya hali chiqmagan bo‘lsa, `dotnet-install.sh --channel 10.0 --install-dir ~/.dotnet` va `export PATH=$HOME/.dotnet:$PATH DOTNET_ROOT=$HOME/.dotnet`.
+
+Tekshirish: `dotnet --version` yangi versiyani ko‘rsatishi kerak (masalan `10.0.113`).
+
+### 3. `global.json` dagi minimal versiyani ko‘tarish
+
+`global.json` dagi `"version"` ni o‘rnatilgan yangi SDK versiyasiga o‘zgartiring:
+
+```json
+{
+  "sdk": {
+    "version": "10.0.113",
+    "rollForward": "latestFeature"
+  }
+}
+```
+
+Shunda eski SDK'li kompyuterda paket yig‘ilmaydi va zaif runtime tasodifan serverga ketib qolmaydi.
+
+### 4. NuGet paketlarini yangilash
+
+Microsoft paketlari .NET bilan bir xil patch versiyada chiqadi (masalan hammasi `10.0.13`). Ularni birga ko‘taring:
+
+| Fayl | Paketlar |
+| --- | --- |
+| `src/PaymentService/PaymentService.csproj` | `Microsoft.AspNetCore.OpenApi`, `Microsoft.EntityFrameworkCore.Design`, `Microsoft.EntityFrameworkCore.SqlServer`, `System.Security.Cryptography.Pkcs` |
+| `tests/PaymentService.Tests/PaymentService.Tests.csproj` | `Microsoft.AspNetCore.Mvc.Testing` |
+| `dotnet-tools.json` | `dotnet-ef` |
+
+Faylda versiyani qo‘lda o‘zgartirish yoki buyruq bilan:
+
+```powershell
+dotnet add src/PaymentService package Microsoft.EntityFrameworkCore.SqlServer --version 10.0.13
+```
+
+**Zaif paket bilvosita kelgan bo‘lsa** (loyihada to‘g‘ridan-to‘g‘ri yozilmagan), avval kim olib kelayotganini aniqlang:
+
+```powershell
+dotnet nuget why src/PaymentService/PaymentService.csproj System.Security.Cryptography.Pkcs
+```
+
+Keyin uni tuzatilgan versiyada to‘g‘ridan-to‘g‘ri qo‘shing — bu bilvosita kelgan eski versiyani bosib o‘tadi:
+
+```powershell
+dotnet add src/PaymentService package System.Security.Cryptography.Pkcs --version 10.0.13
+```
+
+Tuzatilgan versiya raqami zaiflik sahifasida (`https://github.com/advisories/GHSA-...`) "Patched versions" qatorida yozilgan. Ogohlantirishni `NoWarn` bilan o‘chirmang.
+
+### 5. Tekshirish va paketni qayta yig‘ish
+
+```powershell
+dotnet restore
+dotnet list package --vulnerable --include-transitive       # "no vulnerable packages" chiqishi kerak
+dotnet build -warnaserror
+dotnet test                                                  # Docker kerak
+powershell -ExecutionPolicy Bypass -File deploy\windows\publish.ps1
+```
+
+Paket ichidagi runtime yangi versiyada ekanini tekshiring:
+
+```powershell
+(Get-Content dist\windows\Multipay\PaymentService.runtimeconfig.json | ConvertFrom-Json).runtimeOptions.includedFrameworks
+```
+
+Ikkala qatorda ham (`Microsoft.NETCore.App`, `Microsoft.AspNetCore.App`) yangi versiya (masalan `10.0.13`) turishi kerak.
+
+### 6. Serverga qo‘yish
+
+Yangi paketni [Yangilash](#yangilash-orqaga-qaytarish-backup) bo‘limidagi tartibda o‘rnating: service'ni to‘xtatish, backup, fayllarni almashtirish, `migrate.exe`, service'ni ishga tushirish va tekshiruv so‘rovi. Patch yangilanishi baza sxemasini o‘zgartirmaydi, lekin `migrate.exe` ni baribir yurgizish xavfsiz.
+
+Serverning o‘zida esa Windows Update'ni yoqiq tuting — u Windows, IIS va SQL Server'ni yangilaydi; ilovaning ichidagi .NET'ni faqat yuqoridagi tartib yangilaydi.
 
 ## Muammolarni aniqlash
 
